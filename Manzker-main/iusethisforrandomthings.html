@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Photo Upload and Sticky Notes</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            text-align: center;
+            padding: 20px;
+        }
+        h1 {
+            color: #333;
+        }
+        #loginContainer, #mainContainer {
+            display: none;
+        }
+        #photoContainer {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .img-wrapper {
+            display: inline-block;
+            position: relative;
+            margin: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            overflow: hidden;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .img-wrapper img {
+            width: 200px;
+            height: auto;
+            display: block;
+        }
+        .delete-button {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background-color: red;
+            color: white;
+            border: none;
+            padding: 5px;
+            cursor: pointer;
+            border-radius: 3px;
+        }
+        .upload-button {
+            margin: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        #stickyNotesContainer {
+            margin-top: 40px;
+            text-align: left;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .sticky-note {
+            background-color: #fffae6;
+            border: 1px solid #ffd700;
+            border-radius: 5px;
+            padding: 10px;
+            margin-bottom: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .sticky-note textarea {
+            width: 100%;
+            height: 100px;
+            border: none;
+            background: none;
+            resize: none;
+            font-family: Arial, sans-serif;
+            font-size: 14px;
+        }
+        .add-note-button {
+            margin: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div id="loginContainer"></div>
+        <h1>Login</h1>
+        <form id="loginForm"></form>
+            <input type="text" id="username" placeholder="Username" required><br><br>
+            <input type="password" id="password" placeholder="Password" required><br><br>
+            <button type="submit">Login</button>
+        </form>
+        <h2>Create New Account</h2>
+        <form id="registerForm"></form>
+            <input type="text" id="newUsername" placeholder="New Username" required><br><br>
+            <input type="password" id="newPassword" placeholder="New Password" required><br><br>
+            <button type="submit">Register</button>
+        </form>
+    </div>
+
+    <div id="mainContainer"></div>
+        <h1>Upload and Cache Photos</h1>
+        <input type="file" id="photoInput" accept="image/*" multiple style="display: none;">
+        <button class="upload-button" onclick="document.getElementById('photoInput').click();">Add More Photos</button>
+        <div id="photoContainer"></div>
+
+        <h1>Sticky Notes</h1>
+        <button class="add-note-button" onclick="addStickyNote()">Add Sticky Note</button>
+        <div id="stickyNotesContainer"></div>
+    </div>
+
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const storedPassword = localStorage.getItem(`user-${username}`);
+
+            if (storedPassword && storedPassword === password) {
+                document.getElementById('loginContainer').style.display = 'none';
+                document.getElementById('mainContainer').style.display = 'block';
+                loadContent();
+            } else {
+                alert('Invalid username or password');
+            }
+        });
+
+        document.getElementById('registerForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const newUsername = document.getElementById('newUsername').value;
+            const newPassword = document.getElementById('newPassword').value;
+
+            if (localStorage.getItem(`user-${newUsername}`)) {
+                alert('Username already exists');
+            } else {
+                localStorage.setItem(`user-${newUsername}`, newPassword);
+                alert('Account created successfully');
+            }
+        });
+
+        function loadContent() {
+            const photoContainer = document.getElementById('photoContainer');
+            let i = 0;
+            while (localStorage.getItem(`photo-${i}`)) {
+                const imgWrapper = document.createElement('div');
+                imgWrapper.className = 'img-wrapper';
+
+                const img = document.createElement('img');
+                img.src = localStorage.getItem(`photo-${i}`);
+
+                const deleteButton = document.createElement('button');
+                deleteButton.innerText = 'Delete';
+                deleteButton.className = 'delete-button';
+                deleteButton.onclick = function() {
+                    photoContainer.removeChild(imgWrapper);
+                    localStorage.removeItem(`photo-${i}`);
+                };
+
+                imgWrapper.appendChild(img);
+                imgWrapper.appendChild(deleteButton);
+                photoContainer.appendChild(imgWrapper);
+                i++;
+            }
+
+            const stickyNotesContainer = document.getElementById('stickyNotesContainer');
+            let noteIndex = 0;
+            while (localStorage.getItem(`sticky-note-${noteIndex}`)) {
+                const noteContent = localStorage.getItem(`sticky-note-${noteIndex}`);
+                addStickyNoteElement(noteContent, noteIndex);
+                noteIndex++;
+            }
+        }
+
+        document.getElementById('photoInput').addEventListener('change', function(event) {
+            const files = event.target.files;
+            const photoContainer = document.getElementById('photoContainer');
+
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                const reader = new FileReader();
+
+                reader.onload = function(e) {
+                    const imgWrapper = document.createElement('div');
+                    imgWrapper.className = 'img-wrapper';
+
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+
+                    const deleteButton = document.createElement('button');
+                    deleteButton.innerText = 'Delete';
+                    deleteButton.className = 'delete-button';
+                    deleteButton.onclick = function() {
+                        photoContainer.removeChild(imgWrapper);
+                        localStorage.removeItem(`photo-${i}`);
+                    };
+
+                    imgWrapper.appendChild(img);
+                    imgWrapper.appendChild(deleteButton);
+                    photoContainer.appendChild(imgWrapper);
+
+                    localStorage.setItem(`photo-${i}`, e.target.result);
+                };
+
+                reader.readAsDataURL(file);
+            }
+        });
+
+        function addStickyNote() {
+            const noteIndex = document.querySelectorAll('.sticky-note').length;
+            addStickyNoteElement('', noteIndex);
+        }
+
+        function addStickyNoteElement(content, index) {
+            const stickyNotesContainer = document.getElementById('stickyNotesContainer');
+            const stickyNote = document.createElement('div');
+            stickyNote.className = 'sticky-note';
+
+            const textarea = document.createElement('textarea');
+            textarea.value = content;
+            textarea.oninput = function() {
+                localStorage.setItem(`sticky-note-${index}`, textarea.value);
+            };
+
+            stickyNote.appendChild(textarea);
+            stickyNotesContainer.appendChild(stickyNote);
+        }
+
+        window.onload = function() {
+            document.getElementById('loginContainer').style.display = 'block';
+        };
+    </script>
+</body>
+</html>

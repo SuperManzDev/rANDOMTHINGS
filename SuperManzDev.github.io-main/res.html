@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Portfolio</title>
+    <style>
+        body {
+            background-color: #000000; /* Black background */
+            margin: 0; /* Remove default margin */
+            height: 100vh; /* Full viewport height */
+            display: flex; /* Use flexbox for centering */
+            align-items: center; /* Center vertically */
+            justify-content: center; /* Center horizontally */
+        }
+        .button {
+            background-color: #0074D9; /* Blue button */
+            color: #ffffff;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+        }
+        .button:hover {
+            background-color: #0056b3; /* Darker blue on hover */
+        }
+        iframe {
+            height: 100vh; /* Full viewport height */
+        }
+    </style>
+</head>
+<body>
+    <h1>Welcome to My Portfolio</h1>
+    <!-- Button to go back to your portfolio -->
+    <button class="button" onclick="goToPortfolio()">Go Back to Portfolio</button>
+
+    <!-- Embed the PDF using an iframe -->
+    <iframe src="https://manassingh.me/Newone.pdf" width="100%" height="100%"></iframe>
+
+    <script>
+        function goToPortfolio() {
+            // Replace the URL with your actual portfolio URL
+            window.location.href = "http://manassingh.me";
+        }
+    </script>
+</body>
+</html>

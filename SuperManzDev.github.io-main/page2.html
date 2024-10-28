@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Message</title>
+    <style>
+        body {
+            background-color: black;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        #message-container {
+            text-align: center;
+        }
+        #message {
+            color: white;
+            font-weight: bold;
+        }
+        #home-button {
+            background-color: blue;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        /* Cool cursor effect */
+        body {
+            cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="white"><circle cx="12" cy="12" r="6" fill="blue"/></svg>'), auto;
+        }
+    </style>
+    <script>
+        // Function to go back to the previous page
+        function goBack() {
+            window.history.back();
+        }
+    </script>
+</head>
+<body>
+    <div id="message-container">
+        <p id="message">Your message has been sent.</p>
+        <p id="message"> Check your email for confirmation.</p>
+        <p id="message">If not, the Discord relay server might be down or blocked on your Wi-Fi.</p>
+        <button id="home-button" onclick="goBack()">Back to Main Page</button>
+    </div>
+</body>
+</html>
